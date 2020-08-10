@@ -1,6 +1,7 @@
 
 const express   = require('express'),
 app         = express(),
+expressSanitizer = require('express-sanitizer'),
 port        = 3000,
 bodyParser  = require("body-parser"),
 methodOverride = require("method-override"),
@@ -11,6 +12,7 @@ mongoose.connect('mongodb://localhost:27017/RESTfull', {useNewUrlParser: true, u
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 app.use(express.static("public"));
+app.use(expressSanitizer());
 app.use(methodOverride("_method"));
 
 
@@ -52,6 +54,9 @@ app.get("/blogs/new", (req, res) => {
 
 // Save Blogs Route
 app.post("/blogs", (req, res) => {
+    console.log(req.body);
+    req.body.blog.body = req.sanitize(req.body.blog.body)
+    console.log("==========")
     Blog.create(req.body.blog, (err, newBlog) => {
         if(err){
             res.render("new");
